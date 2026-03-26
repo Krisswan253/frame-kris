@@ -11,7 +11,6 @@ let totalItems = 10; // change this if you do more than 10 items
 
 async function getData() {
     // YOUR CODE HERE
-  async function getData() {
 
     frame.innerHTML = "";
 
@@ -71,7 +70,6 @@ async function getData() {
 
         console.log(error);
     }
-}
 }
 
 function goToItem(index) {
