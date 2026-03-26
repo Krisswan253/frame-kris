@@ -11,9 +11,14 @@ let totalItems = 10; // change this if you do more than 10 items
 
 async function getData() {
     // YOUR CODE HERE
-    async function getData() {
+  async function getData() {
 
-    frame.innerHTML = "Loading...";
+    frame.innerHTML = "";
+
+    const loadingItem = document.createElement("li");
+    loadingItem.textContent = "Loading...";
+    loadingItem.classList.add("active");
+    frame.appendChild(loadingItem);
 
     const query = `
         query {
@@ -57,7 +62,13 @@ async function getData() {
         }
 
     } catch (error) {
-        frame.innerHTML = "Error loading data";
+        frame.innerHTML = "";
+
+        const errorItem = document.createElement("li");
+        errorItem.textContent = "Error loading data";
+        errorItem.classList.add("active");
+        frame.appendChild(errorItem);
+
         console.log(error);
     }
 }
