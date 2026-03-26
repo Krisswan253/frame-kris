@@ -25,57 +25,74 @@ async function getData() {
         li.textContent = "Loading...";
         frame.appendChild(li);
     }
+    const pokemonList = [
+  { name: 'ivysaur', image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png' },
+  { name: 'venusaur', image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png' },
+  { name: 'charmander', image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png' },
+  { name: 'charmeleon', image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/5.png' },
+  { name: 'charizard', image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png' },
+  { name: 'squirtle', image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png' },
+  { name: 'wartortle', image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/8.png' },
+  { name: 'blastoise', image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/9.png' },
+  { name: 'caterpie', image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10.png' },
+  { name: 'metapod', image: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/11.png' }
+];
 
-    const query = `
-        query {
-            pokemons(limit: 10, offset: 0) {
-                results {
-                    name
-                }
-            }
-        }
-    `;
-
-    try {
-        const response = await fetch("https://graphql-pokeapi.vercel.app/api/graphql", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ query: query })
-        });
-
-        const data = await response.json();
-        const pokemonList = data.data.pokemons.results;
-
-        const items = frame.querySelectorAll("li");
-
-        for (let i = 0; i < pokemonList.length; i++) {
-            items[i].textContent = pokemonList[i].name;
-        }
-
-    } catch (error) {
-        console.log(error);
+    const gqlQuery = `query pokemons($limit: Int, $offset: Int) {
+  pokemons(limit: $limit, offset: $offset) {
+    count
+    next
+    previous
+    status
+    message
+    results {
+      url
+      name
+      image
     }
+  }
+}`;
+
+const gqlVariables = {
+  limit: 10,
+  offset: 1,
+};
+
+fetch('https://graphql-pokeapi.graphcdn.app/', {
+  credentials: 'omit',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    query: gqlQuery,
+    variables: gqlVariables,
+  }),
+  method: 'POST',
+})
+  .then((res) => res.json())
+  .then((res) => {
+    console.log('Response from server', res);
+
+    const items = frame.querySelectorAll("li");
+
+    for (let i = 0; i < pokemonList.length; i++) {
+        const img = document.createElement("img");
+
+        img.src = pokemonList[i].image;
+        img.alt = pokemonList[i].name;
+
+        items[i].innerHTML = ""; // remove "Loading..."
+        items[i].appendChild(img);
+    }
+});
+                  
 }
 
 function goToItem(index) {
     const items = frame.querySelectorAll('li');
-
-    if (items.length == 0) {
-        return;
-    }
-
-    if (!items[currentItem]) {
-        currentItem = 0;
-    }
-
     items[currentItem].classList.remove('active');
-
-    currentItem = index % items.length;
-
+    currentItem = index;
     items[currentItem].classList.add('active');
 }
+
 frame.addEventListener('click', function () {
     const nextItem = (currentItem + 1) % totalItems;
     goToItem(nextItem);
